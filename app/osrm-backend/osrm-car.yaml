@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: osrm-car
+spec:
+  ports:
+  - port: 80
+    targetPort: 5000
+    protocol: TCP
+  selector:
+    app: osrm-car
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: osrm-car
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: osrm-car
+  template:
+    metadata:
+      labels:
+        app: osrm-car
+        track: stable
+    spec:
+      volumes:
+      - name: osrm-secret-volume
+        secret:
+          secretName: osrm-storage-secret
+      containers:
+      - name: osrm-backend-k8s
+        image: peterevans/osrm-backend-k8s:latest
+        env:
+        - name: OSRM_MODE
+          value: RESTORE
+        - name: OSRM_DATA_LABEL
+          value: argentina-car-20190319
+        - name: OSRM_SA_KEY_PATH
+          value: "/etc/osrm-secret-volume/svc-osrm-backend-key.json"
+        - name: OSRM_PROJECT_ID
+          value: taxiarv2
+        - name: OSRM_GS_BUCKET
+          value: "gs://taxiarv2-osrm-backed-storage"
+        volumeMounts:
+        - name: osrm-secret-volume
+          readOnly: true
+          mountPath: /etc/osrm-secret-volume
+        ports:
+        - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /nearest/v1/healthz/0,0
+            port: 5000
+          initialDelaySeconds: 30
+          timeoutSeconds: 1

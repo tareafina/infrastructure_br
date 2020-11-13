@@ -1,0 +1,17 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "osrm-backend"
+  },
+  "spec": {
+    "ports": [{
+      "port": 5000,
+      "targetPort": 5000
+    }],
+    "selector": {
+      "api": "osrm-backend"
+    },
+    "type": "NodePort"
+  }
+}
