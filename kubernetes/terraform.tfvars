@@ -1,0 +1,11 @@
+region = "southamerica-east1"
+region_zone = "southamerica-east1-a"
+project_name = ""
+machine_type  = ""
+initial_node_count = 2
+zone  = "a"
+ssh_username  = ""
+credentials_file = ""
+public_key_path = ""
+private_key_path = ""
+cluster_name = ""
